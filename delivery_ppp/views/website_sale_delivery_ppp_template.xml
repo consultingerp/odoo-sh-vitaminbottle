@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="payment_ppp_delivery_re" name="payment delivery ppp" inherit_id="website_sale_delivery.payment_delivery_methods">
+        <xpath expr="/*[last()]" position="inside">
+            <t t-if="delivery.pickup_location_provider=='ppp'">
+                <script>
+                    var ppp_callback = function() {
+                        document.getElementsByName("delivery_type").forEach(function(item) {
+                            item.addEventListener("change", function() {
+                                document.location.reload();
+                            });
+                        });                  
+                    };
+
+                    if (
+                        document.readyState === "complete" ||
+                        (document.readyState !== "loading" &amp;&amp; !document.documentElement.doScroll)
+                    ) {
+                        ppp_callback();
+                    } else {
+                        document.addEventListener("DOMContentLoaded", ppp_callback);
+                    }
+				</script>
+            </t>
+            <t t-if="order.carrier_id and order.carrier_id.id == delivery.id and 'checked' and delivery.pickup_location_provider=='ppp'">
+                <script>
+                    function receiveMessage(event){
+                        data = JSON.parse(event.data);
+                        //document.getElementById('shopcode').value=data.shopCode;
+
+                        if(typeof data != 'undefined' &amp;&amp; typeof data.shopCode != 'undefined') {
+                            $.ajax({
+                                url: '/shop/set_pickup_location?locationid='+data.shopCode+'&amp;address='+data.address,
+                                success: function(result) {
+                                    $('#submit_payment').show();
+                                }
+                            });
+                        }
+                    };
+					window.addEventListener("message", receiveMessage, false);
+				</script>
+                <iframe width="100%" height="642px" src="https://online.sprinter.hu/terkep/#/"></iframe>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>
