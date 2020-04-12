@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
   <data>
-    <record id="view_order_form_pl" model="ir.ui.view">
-      <field name="name">sale.order.form.gls</field>
+      
+    <record id="view_order_form_ppp" model="ir.ui.view">
+      <field name="name">sale.order.form.ppp</field>
       <field name="model">sale.order</field>
       <field name="inherit_id" ref="sale.view_order_form"/>
       <field name="arch" type="xml">
         <data>
-          <xpath expr="//field[@name='carrier_id']/../.." position="after">
-            <field name="pickup_location"/>
-            <field name="pickup_address"/>
+          <xpath expr="//field[@name='partner_shipping_id']" position='after'>
+            <field name="pickup_location" attrs="{'readonly': True, 'invisible': [('pickup_location', '=', False)]}"/>
+            <field name="pickup_name" attrs="{'readonly': True, 'invisible': [('pickup_location', '=', False)]}"/>
+            <field name="pickup_address" attrs="{'readonly': True, 'invisible': [('pickup_location', '=', False)]}"/>
           </xpath>
         </data>
       </field>
     </record>
   </data>
-</openerp>
+</odoo>

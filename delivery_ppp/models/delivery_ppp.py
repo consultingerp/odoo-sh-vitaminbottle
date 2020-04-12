@@ -9,5 +9,6 @@ class pickuplocationproviderPPP(models.Model):
 class saleorderpickuplocation(models.Model):
     _inherit = "sale.order"
 
-    pickup_location = fields.Char("Pickup location")
-    pickup_address = fields.Char("Pickup address")
+    pickup_location = fields.Char("PPP Boltkód")
+    pickup_address = fields.Char("PPP Bolt cím")
+    pickup_name = fields.Char("PPP Bolt név")

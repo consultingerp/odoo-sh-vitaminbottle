@@ -12,7 +12,8 @@ Pick Pack Pont
     'depends' : ['website_sale', 'delivery', 'website_sale_delivery'],
     'data': [
         'data/delivery_ppp_data.xml',
-        'views/website_sale_delivery_ppp_template.xml'
+        'views/website_sale_delivery_ppp_template.xml',
+        'views/sale_order.xml'
     ],
     'installable': True,
     'application': True,

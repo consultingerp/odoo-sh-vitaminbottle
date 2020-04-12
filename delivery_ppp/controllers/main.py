@@ -11,5 +11,18 @@ class delivery_pickup_controller(WebsiteSaleDelivery):
         order = request.website.sale_get_order()
         locationid = post.get('locationid')
         address = post.get('address')
-        order.write({'pickup_location': locationid, 'pickup_address': address})
+        name = post.get('name')
+        order.write({'pickup_location': locationid, 'pickup_address': address, 'pickup_name': name})
         return 'locationid set:' + locationid
+    
+    @http.route(['/shop/payment'], type='http', auth="public", website=True)
+    def payment(self, **post):
+        order = request.website.sale_get_order()
+        carrier_id = post.get('carrier_id')
+        if carrier_id:
+            carrier_id = int(carrier_id)            
+            if order.carrier_id.id != carrier_id:
+                order.write({'pickup_location':'', 'pickup_address': ''})
+                
+        return super(delivery_pickup_controller, self).payment(**post)
+    

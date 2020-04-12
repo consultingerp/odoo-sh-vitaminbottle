@@ -1,46 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    
+    <template id="assets_frontend" inherit_id="website.assets_frontend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/delivery_ppp/static/src/js/ppp.js"/>
+        </xpath>
+    </template>
 
-    <template id="payment_ppp_delivery_re" name="payment delivery ppp" inherit_id="website_sale_delivery.payment_delivery_methods">
+    <template id="payment_ppp_delivery" name="payment delivery ppp" inherit_id="website_sale_delivery.payment_delivery_methods">
         <xpath expr="/*[last()]" position="inside">
             <t t-if="delivery.pickup_location_provider=='ppp'">
-                <script>
-                    var ppp_callback = function() {
-                        document.getElementsByName("delivery_type").forEach(function(item) {
-                            item.addEventListener("change", function() {
-                                document.location.reload();
-                            });
-                        });                  
-                    };
-
-                    if (
-                        document.readyState === "complete" ||
-                        (document.readyState !== "loading" &amp;&amp; !document.documentElement.doScroll)
-                    ) {
-                        ppp_callback();
-                    } else {
-                        document.addEventListener("DOMContentLoaded", ppp_callback);
-                    }
-				</script>
+                <span style="display:none" id="ppp_id" t-attf-delivery_id="{{delivery.id}}"/>
             </t>
             <t t-if="order.carrier_id and order.carrier_id.id == delivery.id and 'checked' and delivery.pickup_location_provider=='ppp'">
-                <script>
-                    function receiveMessage(event){
-                        data = JSON.parse(event.data);
-                        //document.getElementById('shopcode').value=data.shopCode;
-
-                        if(typeof data != 'undefined' &amp;&amp; typeof data.shopCode != 'undefined') {
-                            $.ajax({
-                                url: '/shop/set_pickup_location?locationid='+data.shopCode+'&amp;address='+data.address,
-                                success: function(result) {
-                                    $('#submit_payment').show();
-                                }
-                            });
-                        }
-                    };
-					window.addEventListener("message", receiveMessage, false);
-				</script>
-                <iframe width="100%" height="642px" src="https://online.sprinter.hu/terkep/#/"></iframe>
+                <t t-set="ppp_location_selected" t-value="order.carrier_id.pickup_location_provider and order.pickup_location"/>
+                <div id="ppp_data">
+                    <t t-if="ppp_location_selected">
+                        <strong>Átvételi pont:</strong> <span id="ppp_name" t-field="order.pickup_name"/><br/>
+                        <strong>Átvételi pont címe:</strong> <span id="ppp_address" t-field="order.pickup_address"/><br/>
+                    </t>
+                    <iframe width="100%" height="650px" src="https://online.sprinter.hu/terkep/#/" id="ppp_iframe"></iframe>
+                </div>
+            </t>
+        </xpath>
+    </template>
+    
+    <template id="payment_delivery_ppp" name="Delivery Costs" inherit_id="website_sale.payment">
+        <!-- we shouldn't be able to pay if there is no ppp delivery location selected -->
+        <xpath expr="//div[@id='payment_method']" position="attributes">
+                <attribute name="t-att-style">'display: none!important' if order.carrier_id.pickup_location_provider and not order.pickup_location else '' </attribute>
+        </xpath>
+    </template>
+    
+    <template id="website_sale_confirmation_ppp" name="Confirmation with PPP data" inherit_id="website_sale.confirmation">
+        <xpath expr="//div[@class='oe_cart']" position="inside">
+            <t t-if="order.carrier_id.pickup_location_provider == 'ppp'">
+                <h3 class="text-left mt-3">
+                    <strong>Pick Pack Pont átvételi pont adatok</strong>
+                </h3>
+                <strong>Átvételi pont:</strong> <span t-field="order.pickup_name"/><br/>
+                <strong>Átvételi pont címe:</strong> <span t-field="order.pickup_address"/><br/>
+            </t>
+        </xpath>
+    </template>
+    
+    <template id="sale_order_portal_content_ppp" name="Sale Order portal content with PPP data" inherit_id="sale.sale_order_portal_content">
+        <xpath expr="//div[@id='so_date']/following-sibling::div[2]" position="after">
+            <t t-if="sale_order.carrier_id.pickup_location_provider == 'ppp'">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <strong class="d-block mb-1">Pick Pack Pont átvételi pont adatok</strong>
+                        <strong>Átvételi pont:</strong> <span t-field="sale_order.pickup_name"/><br/>
+                        <strong>Átvételi pont címe:</strong> <span t-field="sale_order.pickup_address"/><br/>
+                    </div>
+                </div>                
             </t>
         </xpath>
     </template>
